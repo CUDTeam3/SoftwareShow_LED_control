@@ -1,0 +1,117 @@
+const int Carred = 6;  //car red
+const int Caryel = 5;  //car yello 
+const int Cargre = 4;  //car green
+const int Perred = 3;  //person green
+const int Pergre = 2;  //person red
+ 
+const int LED = 7;
+const int Button = 8;
+//Pin세팅
+ 
+void setup() {
+  pinMode(Button, INPUT);
+  pinMode(Carred, OUTPUT);
+  pinMode(Caryel, OUTPUT);
+  pinMode(Cargre, OUTPUT);
+  pinMode(Pergre, OUTPUT);
+  pinMode(Perred, OUTPUT);
+  pinMode(LED, OUTPUT);
+  Serial.begin(9600);
+}
+//Pin열어주기
+
+
+void LEDON(int light_change){
+digitalWrite(LED, HIGH);
+delay(light_change);
+}//end LEDON
+
+
+ void CARRED(int light_change,int num, int blink_Open, int blink_Close){   //5s
+  //Red on
+  digitalWrite(Carred,HIGH);
+  digitalWrite(Caryel, LOW);
+  digitalWrite(Cargre, LOW);
+  digitalWrite(Pergre, HIGH);
+  digitalWrite(Perred, LOW);
+ 
+  LEDON(light_change);
+  //delay(light_change);//Light Change
+  
+  for(int i=0; i<num;i++){ //0.5s => waveringly
+    digitalWrite(Carred,HIGH);
+    digitalWrite(Caryel, LOW);
+    digitalWrite(Cargre, LOW);
+    digitalWrite(Pergre, HIGH);
+    digitalWrite(Perred, LOW);
+ 
+    digitalWrite(LED, HIGH);
+     LEDON(blink_Open);
+    //delay(blink_Open);// Blinking open
+    
+    digitalWrite(Carred, HIGH);
+    digitalWrite(Caryel, LOW);
+    digitalWrite(Cargre, LOW);
+    digitalWrite(Pergre, LOW);
+    digitalWrite(Perred, LOW);
+ 
+    digitalWrite(LED, HIGH);
+    LEDON(blink_Close);
+    //delay(blink_Close);//Blinking close
+   }//for
+   digitalWrite(Carred, LOW);
+   digitalWrite(LED, LOW);
+}//CARRED
+void CARYELLOW(int light_change){ //3s
+  digitalWrite(Carred,LOW);  //CAR YELLOW
+  digitalWrite(Caryel, HIGH);
+  digitalWrite(Cargre, LOW);
+  digitalWrite(Pergre, LOW); 
+  digitalWrite(Perred, HIGH);
+ // digitalWrite(*,LOW);  //CAR YELLOW
+  delay(light_change);
+}//end CARYELLOW
+void CARGREEN(int light_change){  //5s
+  digitalWrite(Carred,LOW);//CAR GREEN
+  digitalWrite(Caryel, LOW);
+  digitalWrite(Cargre, HIGH);
+  digitalWrite(Pergre, LOW);
+  digitalWrite(Perred, HIGH);
+ 
+  digitalWrite(LED, LOW);
+  delay(light_change);
+}//end CARGREEN
+ 
+
+
+ void carPass(int sig){
+  switch(sig){
+    case 0:          //사람 검출
+      //CARGREEN(3000); //3s
+        CARYELLOW(1000); //1s
+        CARRED(2000,10,100,100); //3s
+      break;
+    
+    case 1:        //red green 의 연결 신호
+    CARGREEN(3000); //3s
+   //  CARYELLOW(1000); //1s
+    //  CARRED(2000,10,100,100); //3s
+     break;
+ 
+    default :
+    break;
+  }//switch
+}//carPass
+
+
+void loop() {
+  int buttonState = 0;     //Pin상태를 체크해주는 buttonState
+  buttonState = digitalRead(Button); //button값을 받아주는 buttonState    
+  Serial.println(buttonState);
+  if(buttonState == LOW){ //button이 눌렸을 때
+    carPass(1);//보행자ON         
+  }
+  else{
+    carPass(0);//button이 눌리지 않는 경우 차량 신호등 ON
+    }
+}
